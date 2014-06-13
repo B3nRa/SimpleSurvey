@@ -1,7 +1,5 @@
 # User/use case specific implementations should not be pushed
-CustomHandler.py
-
-
+Server/CustomHandler.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
