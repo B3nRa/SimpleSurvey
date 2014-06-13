@@ -64,7 +64,7 @@
 		</div>
 
 		<script>
-			(function()
+			(function(){
 				var IP = "127.0.0.1";
 				var PORT = 4242;
 				var ADDRESS = IP + ":" + PORT;
@@ -226,7 +226,7 @@
 
 				var getNumberOfExercises = function(){
 					var xhr = new XMLHttpRequest();
-					xhr.open("GET", "http://"+ADDRESS+":4242/numberExercises/", false);
+					xhr.open("GET", "http://"+ADDRESS+"/numberExercises/", false);
 					xhr.send();
 					var answer = JSON.parse(xhr.responseText);
 					numberOfExercises = answer.numberExercises;
@@ -253,7 +253,7 @@
 					user = location.href.substring(userQuery+5, questioNumberFragmentIndex);
 					getQuestion();
 				}			
-			)();
+			})();
 		</script>
 		<script src="jquery.js"></script>
 		<script src="bootstrap/js/bootstrap.min.js"></script>
