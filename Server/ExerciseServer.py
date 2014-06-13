@@ -6,8 +6,13 @@ import urlparse
 import ExerciseHandler
 import UserHandler
 
-HOST_NAME = sys.argv[1]
-PORT = int(sys.argv[2])
+try:
+	HOST_NAME = sys.argv[1]
+	PORT = int(sys.argv[2])
+except IndexError:
+	print "Using default values. Host = 127.0.0.1, Port = 4242"
+	HOST_NAME = '127.0.0.1'
+	PORT = 4242
 
 class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     escapeSQL = False
