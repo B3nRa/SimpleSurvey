@@ -1,6 +1,7 @@
 __author__ = 'Benjamin'
 
 import csv
+import re
 
 csvPath = ""
 exercises = []
@@ -42,9 +43,23 @@ def checkAnswer(questionId, answer):
         print "Correct"
         return True
     else:
+        for correctAnswer in exercises[questionId].correctAnswers:
+            correctAnswerRegex = buildRegexOfAnswer(correctAnswer)
+            print correctAnswerRegex
+            matches = re.findall(r''+correctAnswerRegex, answer, re.IGNORECASE)
+            if len(matches) > 0:
+                print "Correct"
+                return True
         print "Incorrect"
         return False
 
+def buildRegexOfAnswer(str):
+    str = re.escape(str)
+    print str
+    str = str.replace('\ ', '\s+')
+    str += '([^0-9a-zA-Z])*$'
+    return str
+    pass
 
 class Exercise():
     def __init__(self, exerciseId, exerciseText, type):
