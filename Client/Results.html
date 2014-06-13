@@ -1,0 +1,92 @@
+<!Doctype html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+    	<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+		<title>Results</title>
+	</head>
+	<body>
+		<script>
+			var PORT = 4242;
+			var IP = "127.0.0.1:"+PORT;
+
+			var buildAnswers = function(data){
+				var divContainer = document.createElement('div');
+				divContainer.setAttribute('class', 'container');
+
+				for(var i in data){
+					var outerDiv = document.createElement('div');
+					outerDiv.setAttribute('style', 'margin-bottom: 10px;');
+
+					var exerciseRow = document.createElement('div');
+					exerciseRow.setAttribute('class', 'row');
+					var exerciseColumn = document.createElement('div');
+					exerciseColumn.className = 'col-md-12 col-sm-12 col-xs-12';
+					exerciseColumn.textContent = "Exercise: " + data[i].exercise;
+					exerciseRow.appendChild(exerciseColumn);
+
+					outerDiv.appendChild(exerciseRow);
+
+					for(var j in data[i].correctAnswers){
+						var correctAnswerRow = document.createElement('div');
+						correctAnswerRow.setAttribute('class', 'row');
+						var answerColumn = document.createElement('div');
+						answerColumn.className = 'col-md-12 col-sm-12 col-xs-12';
+						answerColumn.textContent = "Answer " + j+1 + ": " + data[i].correctAnswers[j];
+						correctAnswerRow.appendChild(answerColumn);
+						outerDiv.appendChild(correctAnswerRow);
+					}
+
+					var answeredCounterRow = document.createElement('div');
+					answeredCounterRow.setAttribute('class', 'row');
+					var answeredCounterColumn = document.createElement('div');
+					answeredCounterColumn.className = 'col-md-12 col-sm-12 col-xs-12';
+					answeredCounterColumn.textContent = "#Answered: " + data[i].answeredCounter;
+					answeredCounterRow.appendChild(answeredCounterColumn);
+					outerDiv.appendChild(answeredCounterRow);
+
+					var answeredCorrectlyCounterRow = document.createElement('div');
+					answeredCorrectlyCounterRow.setAttribute('class', 'row');
+					var answeredCorrectlyCounterColumn = document.createElement('div');
+					answeredCorrectlyCounterColumn.className = 'col-md-12 col-sm-12 col-xs-12';
+					answeredCorrectlyCounterColumn.textContent = "#Answered Correctly: " + data[i].answeredCorrectlyCounter;
+					answeredCorrectlyCounterRow.appendChild(answeredCorrectlyCounterColumn);
+					outerDiv.appendChild(answeredCorrectlyCounterRow);
+
+					for(var j in data[i].answers){
+						var answerRow = document.createElement('div');
+						answerRow.setAttribute('class', 'row');
+						var answerColumn = document.createElement('div');
+						answerColumn.className = 'col-md-12 col-sm-12 col-xs-12';
+						answerColumn.textContent = "Given answer from " + data[i].answers[j].user + ": " + data[i].answers[j].answer + " [" + data[i].answers[j].isCorrect + "]";
+						answerRow.appendChild(answerColumn);
+						outerDiv.appendChild(answerRow);
+					}
+
+					divContainer.appendChild(outerDiv);
+				}
+
+				document.body.appendChild(divContainer);
+			}
+
+			var getResults = function(){
+				var xhr = new XMLHttpRequest();
+				xhr.open("GET", "http://"+IP+"/results/", true);
+				xhr.onload = function(){
+					console.log(this.responseText);
+
+
+					var exerciseData = JSON.parse(this.responseText);
+					// var dynamicContent = document.getElementById("dynamic");
+					// dynamicContent.innerHTML = "";
+					buildAnswers(exerciseData);
+				}
+				xhr.send();
+			}
+			getResults();
+		</script>
+		<script src="jquery.js"></script>
+		<script src="bootstrap/js/bootstrap.min.js"></script>
+	</body>
+</html>
