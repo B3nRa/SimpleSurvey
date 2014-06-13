@@ -5,6 +5,7 @@ import time
 import urlparse
 import ExerciseHandler
 import UserHandler
+import CustomHandler
 
 try:
 	HOST_NAME = sys.argv[1]
@@ -21,12 +22,15 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         print "in do_get"
         self.setHeaders([{'type': 'Access-Control-Allow-Origin', 'value': 'http://localhost'}, {'type': 'CONTENT-TYPE', 'value': 'application/json'}])
         path = self.path.split("?")[0]
+        print path
         if path == '/questions/':
             self.sendQuestion()
         elif path == '/numberExercises/':
             self.sendNumberOfExercises()
         elif path == '/results/':
             self.sendResults()
+        else:
+        	CustomHandler.handleGetRequest(self);
 
     def do_POST(self):
         print "path " + self.path
@@ -34,6 +38,8 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         path = self.path.split("?")[0]
         if path == '/questionAnswer/':
             self.giveAnswer()
+        else:
+        	CustomHandler.handlePostRequest(self);
 
     def setHeaders(self, headers):
         self.send_response(200)
