@@ -64,204 +64,196 @@
 		</div>
 
 		<script>
-			var PORT = 4242;
-			var IP = "192.168.178.36:"+PORT;
-			var COLUMNS_PER_ROW = 2;
-			var questioNumber = -1;
-			var numberOfExercises = -1;
+			(function()
+				var IP = "127.0.0.1";
+				var PORT = 4242;
+				var ADDRESS = IP + ":" + PORT;
 
-			var user = "foo";
+				var COLUMNS_PER_ROW = 2;
+				var questioNumber = -1;
+				var numberOfExercises = -1;
 
-			var questionId = -1;
+				var user = "foo";
 
-			var createRowDiv = function(){
-				var rowDiv = document.createElement('div');
-				rowDiv.setAttribute('class', 'row');
-				return rowDiv;
-			}
+				var questionId = -1;
 
-			var createColumnDiv = function(width){
-				var columnDiv = document.createElement('div');
-				columnDiv.setAttribute('class', width);
-				return columnDiv;
-			}
+				var createRowDiv = function(){
+					var rowDiv = document.createElement('div');
+					rowDiv.setAttribute('class', 'row');
+					return rowDiv;
+				}
 
-			var createRadioButton = function(value){
-				var label = document.createElement('label');
-				var input = document.createElement('input');
+				var createColumnDiv = function(width){
+					var columnDiv = document.createElement('div');
+					columnDiv.setAttribute('class', width);
+					return columnDiv;
+				}
 
-				input.setAttribute('type', 'radio');
-				input.setAttribute('name', 'answers');
-				//input.setAttribute('checked', '');
-				input.setAttribute('id', 'answers'+value);
-				input.setAttribute('value', value);
-				input.setAttribute('class', 'radioButtonAnswer');
-				input.onclick = function(){
-					var radioButtons = document.getElementsByClassName('radioButtonAnswer');
-					for(radioButton in radioButtons){
-						radioButtons[radioButton].className = 'radioButtonAnswer';
+				var createRadioButton = function(value){
+					var label = document.createElement('label');
+					var input = document.createElement('input');
+
+					input.setAttribute('type', 'radio');
+					input.setAttribute('name', 'answers');
+					//input.setAttribute('checked', '');
+					input.setAttribute('id', 'answers'+value);
+					input.setAttribute('value', value);
+					input.setAttribute('class', 'radioButtonAnswer');
+					input.onclick = function(){
+						var radioButtons = document.getElementsByClassName('radioButtonAnswer');
+						for(radioButton in radioButtons){
+							radioButtons[radioButton].className = 'radioButtonAnswer';
+						}
+						this.className = this.className + ' answerField';
 					}
-					this.className = this.className + ' answerField';
+					label.innerText = value;
+					label.appendChild(input);
+					return label;
 				}
-				label.innerText = value;
-				label.appendChild(input);
-				return label;
-			}
 
-			var buildAnswers = function(questionData){
-				questionId = questionData.id;
+				var buildAnswers = function(questionData){
+					questionId = questionData.id;
 
-				var gridContainer = document.getElementById('dynamic');
-				var questionDiv = document.getElementById('question');
-				questionDiv.innerText = questionData.question;
+					var gridContainer = document.getElementById('dynamic');
+					var questionDiv = document.getElementById('question');
+					questionDiv.innerText = questionData.question;
 
-				if(questionData.type === 'freeText'){
-					var answerTextArea = document.createElement('textarea');
-					answerTextArea.setAttribute('style', 'width:30%');
-					answerTextArea.setAttribute('class', 'answerField');
-					answerTextArea.value = questionData.givenAnswer;
-					var rowDiv = createRowDiv();
-					gridContainer.appendChild(rowDiv);
-					var columnDiv = createColumnDiv('col-md-12');
-					columnDiv.appendChild(answerTextArea);
-					rowDiv.appendChild(columnDiv);
-				}
-				else if(questionData.type === 'multipleChoice'){
-					var radioButtonGroup = document.createElement('div');
-					radioButtonGroup.setAttribute('class', 'radio');
-					gridContainer.appendChild(radioButtonGroup);
-					var isRowCreation = true;
-					var columnNumber = 0;
-					for(var answer in questionData.answerSelection){
-						if(isRowCreation === true){
-							var rowDiv = createRowDiv();
-							radioButtonGroup.appendChild(rowDiv);
-							isRowCreation = false;
-						}
-
-						var columnDiv = createColumnDiv('col-md-3');
-						var radioButton = createRadioButton(questionData.answerSelection[answer]);
-						if(questionData.givenAnswer === questionData.answerSelection[answer]){
-							radioButton.click();
-						}
-
-						columnDiv.appendChild(radioButton);
+					if(questionData.type === 'freeText'){
+						var answerTextArea = document.createElement('textarea');
+						answerTextArea.setAttribute('style', 'width:30%');
+						answerTextArea.setAttribute('class', 'answerField');
+						answerTextArea.value = questionData.givenAnswer;
+						var rowDiv = createRowDiv();
+						gridContainer.appendChild(rowDiv);
+						var columnDiv = createColumnDiv('col-md-12');
+						columnDiv.appendChild(answerTextArea);
 						rowDiv.appendChild(columnDiv);
+					}
+					else if(questionData.type === 'multipleChoice'){
+						var radioButtonGroup = document.createElement('div');
+						radioButtonGroup.setAttribute('class', 'radio');
+						gridContainer.appendChild(radioButtonGroup);
+						var isRowCreation = true;
+						var columnNumber = 0;
+						for(var answer in questionData.answerSelection){
+							if(isRowCreation === true){
+								var rowDiv = createRowDiv();
+								radioButtonGroup.appendChild(rowDiv);
+								isRowCreation = false;
+							}
 
-						columnNumber++;
+							var columnDiv = createColumnDiv('col-md-3');
+							var radioButton = createRadioButton(questionData.answerSelection[answer]);
+							if(questionData.givenAnswer === questionData.answerSelection[answer]){
+								radioButton.click();
+							}
 
-						if(columnNumber === COLUMNS_PER_ROW){
-							isRowCreation = true;
-							columnNumber = 0;
+							columnDiv.appendChild(radioButton);
+							rowDiv.appendChild(columnDiv);
+
+							columnNumber++;
+
+							if(columnNumber === COLUMNS_PER_ROW){
+								isRowCreation = true;
+								columnNumber = 0;
+							}
 						}
 					}
+
+					var buttonContainer = document.getElementById("buttonContainer");
+					buttonContainer.className = "container";
 				}
 
-				var buttonContainer = document.getElementById("buttonContainer");
-				buttonContainer.className = "container";
-			}
-
-			var extractAnswer = function(){
-				var answerField = document.getElementsByClassName('answerField')[0];
-				if(answerField === undefined){
-					toastr.warning('Please select an answer!');
-				}
-				else{
-					var answer = answerField.value;
-					return answer;
-				}
-				return undefined;
-			}
-
-			var getQuestion = function(){
-				var xhr = new XMLHttpRequest();
-				xhr.open("GET", "http://"+IP+"/questions/?user="+user+"&questionNumber="+questionNumber, true);
-				xhr.onload = function(){
-					console.log(this.responseText);
-					var questionData = JSON.parse(this.responseText);
-					var dynamicContent = document.getElementById("dynamic");
-					dynamicContent.innerHTML = "";
-					buildAnswers(questionData);
-				}
-				xhr.send();
-			}
-
-			var previousButton = document.getElementById("previousButton");
-			previousButton.onclick = function(){
-				var questioNumberFragmentIndex = location.href.search("#questionNumber");
-				questionNumber = parseInt(location.href.substring(questioNumberFragmentIndex+16));
-				questionNumber = questionNumber - 1;
-				location.href = location.href.substring(0,questioNumberFragmentIndex) + "#questionNumber="+questionNumber;
-				getQuestion();
-			}
-
-			var sendAnswer = function(){
-				var answer = extractAnswer();
-				if(answer !== undefined){
-					var xhr = new XMLHttpRequest();
-					xhr.open("POST", "http://"+IP+"/questionAnswer/?user="+user+"&questionNumber="+questionNumber, true);
-					xhr.onload = function(){
-		
+				var extractAnswer = function(){
+					var answerField = document.getElementsByClassName('answerField')[0];
+					if(answerField === undefined){
+						toastr.warning('Please select an answer!');
 					}
-					xhr.send(JSON.stringify({'questionId': questionId, 'answer': answer}));
-					return true;
+					else{
+						var answer = answerField.value;
+						return answer;
+					}
+					return undefined;
 				}
-				return false;
-			}
 
-			var nextButton = document.getElementById("nextButton");
-			nextButton.onclick = function(){
-				var isAnswerSent = sendAnswer();
-				if(isAnswerSent === true){
+				var getQuestion = function(){
+					var xhr = new XMLHttpRequest();
+					xhr.open("GET", "http://"+ADDRESS+"/questions/?user="+user+"&questionNumber="+questionNumber, true);
+					xhr.onload = function(){
+						console.log(this.responseText);
+						var questionData = JSON.parse(this.responseText);
+						var dynamicContent = document.getElementById("dynamic");
+						dynamicContent.innerHTML = "";
+						buildAnswers(questionData);
+					}
+					xhr.send();
+				}
+
+				var previousButton = document.getElementById("previousButton");
+				previousButton.onclick = function(){
 					var questioNumberFragmentIndex = location.href.search("#questionNumber");
 					questionNumber = parseInt(location.href.substring(questioNumberFragmentIndex+16));
-					questionNumber = questionNumber + 1;
+					questionNumber = questionNumber - 1;
 					location.href = location.href.substring(0,questioNumberFragmentIndex) + "#questionNumber="+questionNumber;
 					getQuestion();
 				}
-			}
 
-			// var sendButton = document.getElementById("sendButton"); //questionAnswer
-			// sendButton.onclick = function(){
-			// 	var answer = extractAnswer();
-
-			// 	var xhr = new XMLHttpRequest();
-			// 	xhr.open("POST", "http://"+IP+":4242/questionAnswer/?user="+user+"&questionNumber="+questionNumber, true);
-			// 	xhr.onload = function(){
-	
-			// 	}
-			// 	xhr.send(JSON.stringify({'questionId': questionId, 'answer': answer}));
-			// }
-
-			var getNumberOfExercises = function(){
-				var xhr = new XMLHttpRequest();
-				xhr.open("GET", "http://"+IP+":4242/numberExercises/", false);
-				xhr.send();
-				var answer = JSON.parse(xhr.responseText);
-				numberOfExercises = answer.numberExercises;
-			}
-
-			getNumberOfExercises();
-
-			if(location.href.indexOf("?user=") == -1){
-				var loginContainer = document.getElementById("loginDiv");
-				loginContainer.className = '';
-
-				var startQuizButton = document.getElementById("startQuizButton");
-				startQuizButton.onclick = function(){
-					questionNumber = 0;
-					user = document.getElementById("nameInput").value;
-					location.href = location.href + "?user="+ user +"#questionNumber="+questionNumber;
+				var sendAnswer = function(){
+					var answer = extractAnswer();
+					if(answer !== undefined){
+						var xhr = new XMLHttpRequest();
+						xhr.open("POST", "http://"+ADDRESS+"/questionAnswer/?user="+user+"&questionNumber="+questionNumber, true);
+						xhr.onload = function(){
+			
+						}
+						xhr.send(JSON.stringify({'questionId': questionId, 'answer': answer}));
+						return true;
+					}
+					return false;
 				}
-			}
-			else{
-				var questioNumberFragmentIndex = location.href.search("#questionNumber");
-				questionNumber = parseInt(location.href.substring(questioNumberFragmentIndex+16));
-				var userQuery = location.href.search("user=");
-				user = location.href.substring(userQuery+5, questioNumberFragmentIndex);
-				getQuestion();
-			}			
 
+				var nextButton = document.getElementById("nextButton");
+				nextButton.onclick = function(){
+					var isAnswerSent = sendAnswer();
+					if(isAnswerSent === true){
+						var questioNumberFragmentIndex = location.href.search("#questionNumber");
+						questionNumber = parseInt(location.href.substring(questioNumberFragmentIndex+16));
+						questionNumber = questionNumber + 1;
+						location.href = location.href.substring(0,questioNumberFragmentIndex) + "#questionNumber="+questionNumber;
+						getQuestion();
+					}
+				}
+
+				var getNumberOfExercises = function(){
+					var xhr = new XMLHttpRequest();
+					xhr.open("GET", "http://"+ADDRESS+":4242/numberExercises/", false);
+					xhr.send();
+					var answer = JSON.parse(xhr.responseText);
+					numberOfExercises = answer.numberExercises;
+				}
+
+				getNumberOfExercises();
+
+				if(location.href.indexOf("?user=") == -1){
+					var loginContainer = document.getElementById("loginDiv");
+					loginContainer.className = '';
+
+					var startQuizButton = document.getElementById("startQuizButton");
+					startQuizButton.onclick = function(){
+						questionNumber = 0;
+						user = document.getElementById("nameInput").value;
+						user = 
+						location.href = location.href + "?user="+ user +"#questionNumber="+questionNumber;
+					}
+				}
+				else{
+					var questioNumberFragmentIndex = location.href.search("#questionNumber");
+					questionNumber = parseInt(location.href.substring(questioNumberFragmentIndex+16));
+					var userQuery = location.href.search("user=");
+					user = location.href.substring(userQuery+5, questioNumberFragmentIndex);
+					getQuestion();
+				}			
+			)();
 		</script>
 		<script src="jquery.js"></script>
 		<script src="bootstrap/js/bootstrap.min.js"></script>

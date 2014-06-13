@@ -8,83 +8,87 @@
 	</head>
 	<body>
 		<script>
-			var PORT = 4242;
-			var IP = "127.0.0.1:"+PORT;
+			(function()
+				var IP = "127.0.0.1";
+				var PORT = 4242;
+				var ADDRESS = IP + ":" + PORT;
 
-			var buildAnswers = function(data){
-				var divContainer = document.createElement('div');
-				divContainer.setAttribute('class', 'container');
 
-				for(var i in data){
-					var outerDiv = document.createElement('div');
-					outerDiv.setAttribute('style', 'margin-bottom: 10px;');
+				var buildAnswers = function(data){
+					var divContainer = document.createElement('div');
+					divContainer.setAttribute('class', 'container');
 
-					var exerciseRow = document.createElement('div');
-					exerciseRow.setAttribute('class', 'row');
-					var exerciseColumn = document.createElement('div');
-					exerciseColumn.className = 'col-md-12 col-sm-12 col-xs-12';
-					exerciseColumn.textContent = "Exercise: " + data[i].exercise;
-					exerciseRow.appendChild(exerciseColumn);
+					for(var i in data){
+						var outerDiv = document.createElement('div');
+						outerDiv.setAttribute('style', 'margin-bottom: 10px;');
 
-					outerDiv.appendChild(exerciseRow);
+						var exerciseRow = document.createElement('div');
+						exerciseRow.setAttribute('class', 'row');
+						var exerciseColumn = document.createElement('div');
+						exerciseColumn.className = 'col-md-12 col-sm-12 col-xs-12';
+						exerciseColumn.textContent = "Exercise: " + data[i].exercise;
+						exerciseRow.appendChild(exerciseColumn);
 
-					for(var j in data[i].correctAnswers){
-						var correctAnswerRow = document.createElement('div');
-						correctAnswerRow.setAttribute('class', 'row');
-						var answerColumn = document.createElement('div');
-						answerColumn.className = 'col-md-12 col-sm-12 col-xs-12';
-						answerColumn.textContent = "Answer " + j+1 + ": " + data[i].correctAnswers[j];
-						correctAnswerRow.appendChild(answerColumn);
-						outerDiv.appendChild(correctAnswerRow);
+						outerDiv.appendChild(exerciseRow);
+
+						for(var j in data[i].correctAnswers){
+							var correctAnswerRow = document.createElement('div');
+							correctAnswerRow.setAttribute('class', 'row');
+							var answerColumn = document.createElement('div');
+							answerColumn.className = 'col-md-12 col-sm-12 col-xs-12';
+							answerColumn.textContent = "Answer " + j+1 + ": " + data[i].correctAnswers[j];
+							correctAnswerRow.appendChild(answerColumn);
+							outerDiv.appendChild(correctAnswerRow);
+						}
+
+						var answeredCounterRow = document.createElement('div');
+						answeredCounterRow.setAttribute('class', 'row');
+						var answeredCounterColumn = document.createElement('div');
+						answeredCounterColumn.className = 'col-md-12 col-sm-12 col-xs-12';
+						answeredCounterColumn.textContent = "#Answered: " + data[i].answeredCounter;
+						answeredCounterRow.appendChild(answeredCounterColumn);
+						outerDiv.appendChild(answeredCounterRow);
+
+						var answeredCorrectlyCounterRow = document.createElement('div');
+						answeredCorrectlyCounterRow.setAttribute('class', 'row');
+						var answeredCorrectlyCounterColumn = document.createElement('div');
+						answeredCorrectlyCounterColumn.className = 'col-md-12 col-sm-12 col-xs-12';
+						answeredCorrectlyCounterColumn.textContent = "#Answered Correctly: " + data[i].answeredCorrectlyCounter;
+						answeredCorrectlyCounterRow.appendChild(answeredCorrectlyCounterColumn);
+						outerDiv.appendChild(answeredCorrectlyCounterRow);
+
+						for(var j in data[i].answers){
+							var answerRow = document.createElement('div');
+							answerRow.setAttribute('class', 'row');
+							var answerColumn = document.createElement('div');
+							answerColumn.className = 'col-md-12 col-sm-12 col-xs-12';
+							answerColumn.textContent = "Given answer from " + data[i].answers[j].user + ": " + data[i].answers[j].answer + " [" + data[i].answers[j].isCorrect + "]";
+							answerRow.appendChild(answerColumn);
+							outerDiv.appendChild(answerRow);
+						}
+
+						divContainer.appendChild(outerDiv);
 					}
 
-					var answeredCounterRow = document.createElement('div');
-					answeredCounterRow.setAttribute('class', 'row');
-					var answeredCounterColumn = document.createElement('div');
-					answeredCounterColumn.className = 'col-md-12 col-sm-12 col-xs-12';
-					answeredCounterColumn.textContent = "#Answered: " + data[i].answeredCounter;
-					answeredCounterRow.appendChild(answeredCounterColumn);
-					outerDiv.appendChild(answeredCounterRow);
+					document.body.appendChild(divContainer);
+				}
 
-					var answeredCorrectlyCounterRow = document.createElement('div');
-					answeredCorrectlyCounterRow.setAttribute('class', 'row');
-					var answeredCorrectlyCounterColumn = document.createElement('div');
-					answeredCorrectlyCounterColumn.className = 'col-md-12 col-sm-12 col-xs-12';
-					answeredCorrectlyCounterColumn.textContent = "#Answered Correctly: " + data[i].answeredCorrectlyCounter;
-					answeredCorrectlyCounterRow.appendChild(answeredCorrectlyCounterColumn);
-					outerDiv.appendChild(answeredCorrectlyCounterRow);
+				var getResults = function(){
+					var xhr = new XMLHttpRequest();
+					xhr.open("GET", "http://"+address+"/results/", true);
+					xhr.onload = function(){
+						console.log(this.responseText);
 
-					for(var j in data[i].answers){
-						var answerRow = document.createElement('div');
-						answerRow.setAttribute('class', 'row');
-						var answerColumn = document.createElement('div');
-						answerColumn.className = 'col-md-12 col-sm-12 col-xs-12';
-						answerColumn.textContent = "Given answer from " + data[i].answers[j].user + ": " + data[i].answers[j].answer + " [" + data[i].answers[j].isCorrect + "]";
-						answerRow.appendChild(answerColumn);
-						outerDiv.appendChild(answerRow);
+
+						var exerciseData = JSON.parse(this.responseText);
+						// var dynamicContent = document.getElementById("dynamic");
+						// dynamicContent.innerHTML = "";
+						buildAnswers(exerciseData);
 					}
-
-					divContainer.appendChild(outerDiv);
+					xhr.send();
 				}
-
-				document.body.appendChild(divContainer);
-			}
-
-			var getResults = function(){
-				var xhr = new XMLHttpRequest();
-				xhr.open("GET", "http://"+IP+"/results/", true);
-				xhr.onload = function(){
-					console.log(this.responseText);
-
-
-					var exerciseData = JSON.parse(this.responseText);
-					// var dynamicContent = document.getElementById("dynamic");
-					// dynamicContent.innerHTML = "";
-					buildAnswers(exerciseData);
-				}
-				xhr.send();
-			}
-			getResults();
+				getResults();
+			)();
 		</script>
 		<script src="jquery.js"></script>
 		<script src="bootstrap/js/bootstrap.min.js"></script>
