@@ -116,7 +116,7 @@
 
 					var gridContainer = document.getElementById('dynamic');
 					var questionDiv = document.getElementById('question');
-					questionDiv.innerText = questionData.question;
+					questionDiv.innerHTML = questionData.question;
 
 					if(questionData.type === 'freeText'){
 						var answerTextArea = document.createElement('textarea');
