@@ -90,13 +90,14 @@
 				}
 
 				var createRadioButton = function(value){
+					var radioDiv = document.createElement('div');
 					var label = document.createElement('label');
 					var input = document.createElement('input');
 
 					input.setAttribute('type', 'radio');
 					input.setAttribute('name', 'answers');
 					//input.setAttribute('checked', '');
-					input.setAttribute('id', 'answers'+value);
+					input.setAttribute('id', 'answers '+value);
 					input.setAttribute('value', value);
 					input.setAttribute('class', 'radioButtonAnswer');
 					input.onclick = function(){
@@ -106,9 +107,10 @@
 						}
 						this.className = this.className + ' answerField';
 					}
-					label.innerText = value;
-					label.appendChild(input);
-					return label;
+					label.textContent = value;
+					radioDiv.appendChild(label);
+					radioDiv.appendChild(input);
+					return {'radioDiv': radioDiv, 'input': input};
 				}
 
 				var buildAnswers = function(questionData){
@@ -144,12 +146,15 @@
 
 							var columnDiv = createColumnDiv('col-md-3');
 							var radioButton = createRadioButton(questionData.answerSelection[answer]);
+
+							columnDiv.appendChild(radioButton.radioDiv);
+							rowDiv.appendChild(columnDiv);
+
 							if(questionData.givenAnswer === questionData.answerSelection[answer]){
-								radioButton.click();
+								console.log(radioButton);
+								radioButton.input.click();
 							}
 
-							columnDiv.appendChild(radioButton);
-							rowDiv.appendChild(columnDiv);
 
 							columnNumber++;
 
@@ -184,6 +189,11 @@
 						var questionData = JSON.parse(this.responseText);
 						var dynamicContent = document.getElementById("dynamic");
 						dynamicContent.innerHTML = "";
+
+						if(questionData.additionalMessage !== 'okay'){
+							toastr.info(questionData.additionalMessage);
+						}
+
 						buildAnswers(questionData);
 					}
 					xhr.send();

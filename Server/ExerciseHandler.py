@@ -59,7 +59,6 @@ def buildRegexOfAnswer(str):
     str = str.replace('\ ', '\s+')
     str += '([^0-9a-zA-Z])*$'
     return str
-    pass
 
 class Exercise():
     def __init__(self, exerciseId, exerciseText, type):
