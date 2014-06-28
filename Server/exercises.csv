@@ -1,8 +1,5 @@
 Write a Select-statement that loads all columns from table 'characters';freeText;r:=Select * from characters;;;
-What is the name of the organization that publishes the Top 10 list of attacks every year?;multipleChoice;r:=OWASP;f:=XSS;f:=ATTAX;f:=W3C
-What is XSS?;multipleChoice;r:=Cross-Site Scripting;f:=Cascading Style Sheets;f:=eXtreme Security Scripting;f:=Cross-Site Sourcing
-Statement: SELECT * FROM mushroom_kingdom WHERE name = "%UserInput%" <br/> How do you exploit?;multipleChoice;f:=" OR 1=1;f:=" AND 1=1 #;r:=" OR 1=1 #;f:=" AND 1=1
-Statement: SELECT * FROM mushroom_kingdom … 42 <br/> You want to find out how many columns the table contains. <br/> What are the missing key words?;freeText;f:=SORT BY;f:=WHERE columns AMOUNT;r:=ORDER BY;f:=COUNT COLUMNS;
-Statement: SELECT * FROM mushroom_kingdom WHERE id = %UserInput% <br/> You want to fetch data from columns 2 and 3 from table "hyrule". <br/> Which user input would be correct? <i>(Advice: both tables contain 3 columns)</i>;multipleChoice;f:=AND FROM hyrule;f:=" UNION SELECT 2,3 FROM hyrule #;r:=UNION SELECT 2,3 FROM hyrule;f:=UNION SELECT * FROM hyrule;f:=" UNION SELECT * FROM hyrule #
+Statement: SELECT * FROM mushroom_kingdom WHERE name = "<font color="orange">Input</font>" <br/> How do you exploit?;multipleChoice;f:=" OR 1=1;f:=" AND 1=1 #;r:=" OR 1=1 #;f:=" AND 1=1
+Statement: SELECT * FROM mushroom_kingdom WHERE id = <font color="orange">Input</font> <br/> You want to fetch data from table "hyrule". <br/> Which user input would be correct?;multipleChoice;f:=AND FROM hyrule;f:=" UNION SELECT * FROM hyrule #;r:=UNION SELECT * FROM hyrule;f:=UNION * hyrule;
 <a href="./sqlInjection1.html" target="_blank">Fetch data from 'mushroom_kingdom'</a>. What is the fourth name?;freeText;r:=Bowser;
 <a href="./sqlInjection2.html" target="_blank">Fetch data from 'hyrule'</a>. What is the third password?;freeText;r:=archEnemy;
